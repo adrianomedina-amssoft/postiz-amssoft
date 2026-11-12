@@ -1,0 +1,25 @@
+{
+ auto_https off
+ admin off
+}
+:80 {
+ @privacy path /privacidade /privacidade/
+ handle @privacy {
+ root * /srv/postiz-public
+ rewrite * /privacidade.html
+ file_server
+ }
+ @deletion path /exclusao-de-dados /exclusao-de-dados/
+ handle @deletion {
+ root * /srv/postiz-public
+ rewrite * /exclusao-de-dados.html
+ file_server
+ }
+ handle /politicas.css {
+ root * /srv/postiz-public
+ file_server
+ }
+ handle {
+ reverse_proxy postiz:5000
+ }
+}
