@@ -253,6 +253,8 @@ services:
         max-file: '3'
     expose:
     - 80
+    labels:
+    - traefik.http.routers.compose-override-mobile-microchip-fttfh7-32-websecure.tls=true
 volumes:
   postgres-volume:
     external: false
