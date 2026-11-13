@@ -1,8 +1,10 @@
 services:
   postiz:
-    image: amssoft/postiz:v2.25.3-reels-20261028
+    image: amssoft/postiz-status:9c1480ac2ec88be6b2ffd4d30a6fb4b0d613797a
     restart: always
     environment:
+      WHATSAPP_STATUS_URL: https://status-whats.amssoft.com.br
+      WHATSAPP_STATUS_TOKEN_FILE: /run/secrets/whatsapp-status-token
       INSTAGRAM_APP_ID: ${INSTAGRAM_APP_ID}
       INSTAGRAM_APP_SECRET: ${INSTAGRAM_APP_SECRET}
       MAIN_URL: https://postiz.amssoft.com.br
