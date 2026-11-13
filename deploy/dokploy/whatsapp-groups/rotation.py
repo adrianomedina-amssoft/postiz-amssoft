@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 import datetime as dt,fcntl,hashlib,json,os,pathlib,sqlite3,subprocess,sys,zoneinfo
+sys.path.insert(0,str(pathlib.Path(__file__).resolve().parents[1]/'common'))
+from workflow_cancel import cancel_workflow
 UTC=dt.timezone.utc
 
 def next_slots(now,timezone,count=3):
@@ -14,7 +16,7 @@ def choose_asset(assets,last_position):
  if not assets:return None
  return next((a for a in assets if a['position']>last_position),assets[0])
 
-def retire_missing(state,now,lookup,cancel):
+def retire_missing(state,now,lookup,cancel,verify=None):
  issues=[]
  rows=state.execute('SELECT s.*,a.media FROM slots s JOIN assets a ON a.hash=s.hash WHERE a.active=0 AND s.at>? ORDER BY s.at',(now.isoformat(),)).fetchall()
  for row in rows:
@@ -30,6 +32,8 @@ def retire_missing(state,now,lookup,cancel):
    if dt.datetime.fromisoformat(slot['at'])<=now+dt.timedelta(minutes=3):issues.append('RemovalTooCloseToDispatch:'+slot['at']);continue
    cancel(post['id'])
    if any(not p.get('deletedAt') for p in lookup(slot)):issues.append('RemovalNotConfirmed:'+slot['at']);continue
+  if verify:
+   for postid in {p['id'] for p in posts}|({slot['postid']} if slot['postid'] else set()):verify(postid)
   state.execute('DELETE FROM slots WHERE at=?',(slot['at'],));state.commit()
  return issues
 
@@ -95,7 +99,7 @@ def run():
    media_id=json.loads(slot['media'])['id'];when=dt.datetime.fromisoformat(slot['at']).strftime('%Y-%m-%d %H:%M:%S')
    rows=sql('SELECT coalesce(json_agg(x),\'[]\') FROM (SELECT id,state,"deletedAt",image FROM "Post" WHERE "integrationId"='+quote(channel)+' AND "publishDate"='+quote(when)+')x;')
    return [p for p in rows if any(m.get('id')==media_id for m in json.loads(p['image']or'[]'))]
-  status['issues']+=retire_missing(state,now,removal_lookup,lambda postid:api('/posts/'+postid,'DELETE'))
+  status['issues']+=retire_missing(state,now,removal_lookup,lambda postid:api('/posts/'+postid,'DELETE'),lambda postid:cancel_workflow(postid,project))
   for at in next_slots(now,cfg['timezone']):
    if not assets:break
    anchor=at.isoformat();slot=state.execute('SELECT * FROM slots WHERE at=?',(anchor,)).fetchone()

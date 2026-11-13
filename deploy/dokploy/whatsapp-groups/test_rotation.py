@@ -22,3 +22,15 @@ for state,minutes in [('QUEUE',2),('PUBLISHED',120)]:
 # Failed confirmation keeps reservation, preventing replacement duplicate.
 d=scenario();assert m.retire_missing(d,now,lambda s:[{'id':'post','state':'QUEUE','deletedAt':None}],lambda i:None);assert d.execute('SELECT count(*) FROM slots').fetchone()[0]==1
 print('PASS: future cancellation, idempotence, active preservation, prepared cleanup, ambiguous creation, imminent/published safety, deletion confirmation')
+
+# Deleted posts still need workflow verification before a reservation is released.
+d=scenario();seen=[]
+assert not m.retire_missing(d,now,lambda s:[{'id':'post','state':'QUEUE','deletedAt':'deleted'}],lambda i:1/0,lambda i:seen.append(i))
+assert seen==['post'] and not d.execute('SELECT * FROM slots').fetchall()
+d=scenario()
+def failed_verify(i):raise RuntimeError('Workflow still running')
+try:m.retire_missing(d,now,lambda s:[{'id':'post','state':'QUEUE','deletedAt':'deleted'}],lambda i:1/0,failed_verify)
+except RuntimeError:pass
+else:raise AssertionError('Verification failure must remain pending')
+assert d.execute('SELECT count(*) FROM slots').fetchone()[0]==1
+print('PASS: workflow verification after API deletion; failure preserves reconciliation state')

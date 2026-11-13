@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 import datetime as dt,fcntl,hashlib,json,os,pathlib,sqlite3,subprocess,sys,uuid,zoneinfo
 os.umask(0o077)
+sys.path.insert(0,str(pathlib.Path(__file__).resolve().parents[1]/'common'))
+from workflow_cancel import cancel_workflow
 ROOT=pathlib.Path('/var/lib/amssoft-postiz-status');ROOT.mkdir(exist_ok=True)
 lock=(ROOT/'recurrence.lock').open('w')
 try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
@@ -52,10 +54,14 @@ remote={}
 if managed:
  rows=sql('SELECT coalesce(json_agg(x),\'[]\') FROM (SELECT id,state,"deletedAt" FROM "Post" WHERE id IN ('+','.join(quote(v) for v in managed)+'))x;')
  remote={r['id']:r for r in rows}
+def retire_post(postid):
+ post=remote.get(postid)
+ if post and not post['deletedAt']:api('/posts/'+postid,'DELETE')
+ cancel_workflow(postid,cfg['compose_project'])
 for row in known:
  if cfg['enabled'] and any(a['hash']==row['hash'] for a in assets):continue
  if row['postid']:
-  api('/posts/'+row['postid'],'DELETE')
+  retire_post(row['postid'])
  state.execute('DELETE FROM series WHERE hash=?',(row['hash'],));state.commit()
 if cfg['enabled']:
  for i,a in enumerate(assets):
@@ -69,7 +75,7 @@ if cfg['enabled']:
    anchor=dt.datetime.fromisoformat(row['due']);today=now.astimezone(TZ).date();at=dt.datetime.combine(today,anchor.astimezone(TZ).timetz().replace(tzinfo=None),TZ)
    if at.astimezone(UTC)<now:at+=dt.timedelta(days=1)
    agenda.append({'file':a['file'],'localTime':at.strftime('%d/%m %H:%M')+' (Rondônia)','repeat':True,'postId':row['postid']});continue
-  if row and row['postid']:api('/posts/'+row['postid'],'DELETE');state.execute('UPDATE series SET postid=NULL,state=\'prepared\' WHERE hash=?',(a['hash'],));state.commit()
+  if row and row['postid']:retire_post(row['postid']);state.execute('UPDATE series SET postid=NULL,state=\'prepared\' WHERE hash=?',(a['hash'],));state.commit()
   media=json.loads(row['media']) if row and row['media'] else None
   if not media:
    previous=pathlib.Path('/var/lib/amssoft-ads-stories/state.sqlite3')
