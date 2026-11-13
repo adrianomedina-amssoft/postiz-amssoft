@@ -64,6 +64,7 @@ services:
       NX_ADD_PLUGINS: false
       TZ: America/Manaus
     volumes:
+    - /opt/amssoft-whatsapp-status/private/postiz-status-token:/run/secrets/whatsapp-status-token:ro
     - postiz-config:/config/
     - postiz-uploads:/uploads/
     - ./boot/readiness.cjs:/opt/postiz-readiness.cjs:ro
