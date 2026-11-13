@@ -16,11 +16,22 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
+      - name: Load verified immutable dependency base
+        run: |
+          mkdir -p /tmp/postiz-base
+          cd /tmp/postiz-base
+          base_url=https://github.com/adrianomedina-amssoft/postiz-amssoft/releases/download/whatsapp-status-9c1480ac2ec88be6b2ffd4d30a6fb4b0d613797a
+          curl --fail --location --retry 2 "$base_url/SHA256SUMS" -o SHA256SUMS
+          curl --fail --location --retry 2 "$base_url/postiz-status.tar.gz.part-aa" -o postiz-status.tar.gz.part-aa
+          curl --fail --location --retry 2 "$base_url/postiz-status.tar.gz.part-ab" -o postiz-status.tar.gz.part-ab
+          sha256sum --check SHA256SUMS
+          cat postiz-status.tar.gz.part-* | gzip -dc | docker load
+          rm -f postiz-status.tar.gz.part-* SHA256SUMS
       - name: Build application image
         env:
           SOURCE_REVISION: ${{ github.sha }}
         run: |
-          docker build -f Dockerfile.dev --build-arg NEXT_PUBLIC_VERSION=amssoft-whatsapp-status --label org.opencontainers.image.revision="$SOURCE_REVISION" --label org.opencontainers.image.source=https://github.com/adrianomedina-amssoft/postiz-amssoft -t "amssoft/postiz-status:$SOURCE_REVISION" .
+          docker build -f Dockerfile.amssoft-whatsapp --build-arg NEXT_PUBLIC_VERSION=amssoft-whatsapp-status --label org.opencontainers.image.revision="$SOURCE_REVISION" --label org.opencontainers.image.source=https://github.com/adrianomedina-amssoft/postiz-amssoft -t "amssoft/postiz-status:$SOURCE_REVISION" .
           docker save "amssoft/postiz-status:$SOURCE_REVISION" | gzip -1 | split -b 1400m - postiz-status.tar.gz.part-
           sha256sum postiz-status.tar.gz.part-* > SHA256SUMS
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

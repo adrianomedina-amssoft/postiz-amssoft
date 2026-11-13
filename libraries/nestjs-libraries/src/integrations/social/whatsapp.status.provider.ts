@@ -25,7 +25,7 @@ export class WhatsappStatusProvider extends SocialAbstract implements SocialProv
     if (!account.ready) return 'Conecte o WhatsApp no painel de Status antes de adicionar o canal';
     return this.refreshToken();
   }
-  private async bridge(path: string, body?: unknown) {
+  protected async bridge(path: string, body?: unknown) {
     const base = process.env.WHATSAPP_STATUS_URL;
     const file = process.env.WHATSAPP_STATUS_TOKEN_FILE;
     if (!base || !file) throw new BadBody(this.identifier, '{}', '{}', 'Conexão com o serviço de Status não configurada');

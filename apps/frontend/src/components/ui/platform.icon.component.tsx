@@ -27,6 +27,7 @@ const brandMarks: Record<
   }
 > = {
   'whatsapp-status': { src: '/icons/platforms/whatsapp-status.svg', whiteSrc: '/icons/platforms/whatsapp-status.svg', blackSrc: '/icons/platforms/whatsapp-status.svg', ratio: 1, minHeight: 0, link: () => undefined },
+  'whatsapp-groups': { src: '/icons/platforms/whatsapp-status.svg', whiteSrc: '/icons/platforms/whatsapp-status.svg', blackSrc: '/icons/platforms/whatsapp-status.svg', ratio: 1, minHeight: 0, link: () => undefined },
   youtube: {
     src: '/icons/platforms/youtube.svg',
     whiteSrc: '/icons/platforms/youtube-white.svg',

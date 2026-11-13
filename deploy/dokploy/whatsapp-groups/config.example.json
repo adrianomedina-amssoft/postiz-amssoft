@@ -1,0 +1,8 @@
+{
+  "directory": "/srv/postiz/group-media",
+  "timezone": "America/Porto_Velho",
+  "compose_project": "YOUR_POSTIZ_COMPOSE_PROJECT",
+  "postiz_url": "https://postiz.example.com",
+  "probe_image": "amssoft/waha-status:YOUR_VERIFIED_REVISION",
+  "state_directory": "/var/lib/amssoft-postiz-groups"
+}

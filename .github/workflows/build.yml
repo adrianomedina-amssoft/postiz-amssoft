@@ -3,7 +3,7 @@ name: Build
 
 on:
   push:
-    branches-ignore: ['deploy/**']
+    branches-ignore: ['deploy/**', 'amssoft/whatsapp-status']
     paths-ignore: ['deploy/**', 'docs/**', '**/*.md']
   merge_group:
   pull_request:

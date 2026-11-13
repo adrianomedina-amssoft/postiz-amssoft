@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import { WhatsappGroupsProvider } from './social/whatsapp.groups.provider';
 import { WhatsappStatusProvider } from './social/whatsapp.status.provider';
 
 import { Injectable } from '@nestjs/common';
@@ -42,6 +43,7 @@ import { TumblrProvider } from '@gitroom/nestjs-libraries/integrations/social/tu
 
 export const socialIntegrationList: Array<SocialAbstract & SocialProvider> = [
   new WhatsappStatusProvider(),
+  new WhatsappGroupsProvider(),
   new XProvider(),
   new LinkedinProvider(),
   new LinkedinPageProvider(),

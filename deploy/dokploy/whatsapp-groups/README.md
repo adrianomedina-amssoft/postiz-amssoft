@@ -1,0 +1,5 @@
+# Rotating group media in the Postiz calendar
+
+Run rotation.py with a private config at /opt/amssoft-postiz-groups-automation/config.json. A rolling window of three native Postiz slots is created at 06:00, 12:00 and 18:00 in the configured timezone. Each slot selects one active asset in persistent discovery order and wraps around the list. New files append to the order; reserved slots keep their media. One aggregate Postiz channel sends the same asset to all groups in the bridge's private authorization snapshot. No group IDs, names or tokens belong in this repository.
+
+Empty folder means no posts. Accept stable MP4/JPEG/PNG up to 32 MiB, probe new media in a disposable container without network, credentials or write mounts, and upload on demand. The current implementation reserves three upcoming slots; an existing uncertain creation must be reconciled instead of blindly retried. Postiz owns all dates; the bridge accepts only immediate requests and tracks per-target receipts. Install as a oneshot timer every minute, after the group channel is available. Use .part plus an atomic rename when adding files.

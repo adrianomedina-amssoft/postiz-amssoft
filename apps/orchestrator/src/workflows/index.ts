@@ -19,3 +19,5 @@ export * from './streak.workflow';
 export * from './generate.video.workflow';
 export * from './process.media.workflow';
 export * from './clipping.workflow';
+
+export * from './post-workflows/post.workflow.v1.1.3';

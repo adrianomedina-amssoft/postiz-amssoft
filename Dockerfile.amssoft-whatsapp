@@ -1,0 +1,6 @@
+# Reuse the verified dependency layers; no package install or production secrets.
+FROM amssoft/postiz-status:9c1480ac2ec88be6b2ffd4d30a6fb4b0d613797a
+ARG NEXT_PUBLIC_VERSION
+ENV NEXT_PUBLIC_VERSION=$NEXT_PUBLIC_VERSION
+COPY . /app
+RUN rm -rf apps/frontend/.next apps/backend/dist apps/orchestrator/dist && NODE_OPTIONS="--max-old-space-size=4096" pnpm run build

@@ -56,6 +56,7 @@ export type AllProvidersSettings =
   | ProviderExtension<'mastodon', None>
   | ProviderExtension<'bluesky', None>
   | ProviderExtension<'whatsapp-status', None>
+  | ProviderExtension<'whatsapp-groups', None>
   | ProviderExtension<'telegram', None>
   | ProviderExtension<'nostr', None>
   | ProviderExtension<'moltbook', MoltbookDto>
@@ -97,6 +98,7 @@ export const allProviders = (setEmpty?: any) => {
     { value: setEmpty, name: 'mastodon' },
     { value: setEmpty, name: 'bluesky' },
     { value: setEmpty, name: 'whatsapp-status' },
+    { value: setEmpty, name: 'whatsapp-groups' },
     { value: setEmpty, name: 'telegram' },
     { value: setEmpty, name: 'nostr' },
     { value: setEmpty, name: 'vk' },
