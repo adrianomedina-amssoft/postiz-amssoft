@@ -3,8 +3,14 @@ name: Build
 
 on:
   push:
+    branches-ignore: ['deploy/**']
+    paths-ignore: ['deploy/**', 'docs/**', '**/*.md']
   merge_group:
   pull_request:
+
+concurrency:
+  group: upstream-build-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
