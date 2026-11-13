@@ -2,6 +2,7 @@ name: AMS SOFT WhatsApp Status build
 on:
   push:
     branches: [amssoft/whatsapp-status]
+    paths-ignore: ['deploy/**', 'docs/**', '**/*.md']
 concurrency:
   group: amssoft-whatsapp-status-build
   cancel-in-progress: true
