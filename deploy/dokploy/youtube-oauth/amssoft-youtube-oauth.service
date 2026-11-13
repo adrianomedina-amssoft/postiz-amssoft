@@ -1,0 +1,13 @@
+[Unit]
+Description=Check and proactively refresh the managed Postiz YouTube OAuth access
+After=docker.service network-online.target
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/postiz-amssoft/automation/youtube-oauth/monitor.py
+User=root
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+MemoryMax=128M
+CPUQuota=20%
+TimeoutStartSec=100

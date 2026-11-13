@@ -1,0 +1,14 @@
+const assert=require('node:assert/strict'),{checkChannel,fingerprint}=require('./check.cjs');
+const now=Date.parse('2026-11-13T12:00:00Z'),env={YOUTUBE_CLIENT_ID:'fixture-client',YOUTUBE_CLIENT_SECRET:'fixture-secret'};
+const base={id:'fixture-channel',internalId:'fixture-youtube-channel',token:'fixture-old-access',refreshToken:'fixture-refresh',refreshNeeded:false,tokenExpiration:new Date(now+3600000)};
+(async()=>{
+let saves=[],calls=0;let result=await checkChannel(base,{env,now,fetch:()=>{throw Error('Unexpected network')},save:()=>{throw Error('Unexpected write')}});assert(result.ready&&!result.renewed);
+const refresh=async()=>{calls++;return calls===1?{ok:true,json:async()=>({access_token:'fixture-new-access',expires_in:3600})}:{ok:true,json:async()=>({items:[{id:base.internalId}]})}};
+result=await checkChannel({...base,tokenExpiration:new Date(now+15*60000)},{env,now,fetch:refresh,save:async(c,d)=>{saves.push(d);return true}});assert(result.ready&&result.renewed);assert.equal(saves[0].refreshToken,base.refreshToken);assert.equal(saves[0].refreshNeeded,false);assert.equal(saves[0].tokenExpiration.getTime(),now+3600000);
+saves=[];result=await checkChannel({...base,refreshNeeded:true},{env,now,fetch:async()=>({ok:false,status:400,json:async()=>({error:'invalid_grant',error_description:'Token has been expired or revoked.'})}),save:async(c,d)=>{saves.push(d);return true}});assert(result.ownerActionRequired&&!result.ready);assert.deepEqual(saves,[{refreshNeeded:true}]);
+result=await checkChannel({...base,refreshNeeded:true},{env,now,previous:result,fetch:()=>{throw Error('Repeated revoked token request')},save:()=>{throw Error('Unexpected write')}});assert(result.cachedFailure&&result.ownerActionRequired);
+result=await checkChannel({...base,refreshNeeded:true},{env,now,fetch:async()=>({ok:false,status:503,json:async()=>({error:'temporarily_unavailable'})}),save:()=>{throw Error('Transient failure must not revoke credentials')}});assert.equal(result.state,'temporary_refresh_error');assert(!result.ownerActionRequired);
+calls=0;saves=[];result=await checkChannel({...base,refreshNeeded:true},{env,now,fetch:async()=>{calls++;return calls===1?{ok:true,json:async()=>({access_token:'fixture-new-access',expires_in:3600})}:{ok:true,json:async()=>({items:[{id:'wrong-channel'}]})}},save:async(c,d)=>{saves.push(d);return true}});assert.equal(result.state,'channel_mismatch');assert.deepEqual(saves,[{refreshNeeded:true}]);
+calls=0;result=await checkChannel({...base,refreshNeeded:true},{env,now,fetch:refresh,save:async()=>false});assert.equal(result.state,'concurrent_change_retry_next_run');assert(!result.ready);
+assert(!JSON.stringify(result).includes(base.refreshToken));console.log('PASS: healthy skip, proactive refresh, preserved refresh token, revoked-token diagnosis and suppression, transient recovery, channel identity, concurrent updates, no credential output');
+})().catch(e=>{console.error(e);process.exitCode=1});
