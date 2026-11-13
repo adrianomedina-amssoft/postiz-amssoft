@@ -1,0 +1,9 @@
+{
+  "enabled": true,
+  "interval_minutes": 60,
+  "start_hour": 6,
+  "timezone": "America/Porto_Velho",
+  "directory": "/srv/postiz/status-media",
+  "compose_project": "YOUR_POSTIZ_COMPOSE_PROJECT",
+  "postiz_url": "https://postiz.example.com"
+}
