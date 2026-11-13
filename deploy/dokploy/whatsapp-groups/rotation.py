@@ -14,6 +14,25 @@ def choose_asset(assets,last_position):
  if not assets:return None
  return next((a for a in assets if a['position']>last_position),assets[0])
 
+def retire_missing(state,now,lookup,cancel):
+ issues=[]
+ rows=state.execute('SELECT s.*,a.media FROM slots s JOIN assets a ON a.hash=s.hash WHERE a.active=0 AND s.at>? ORDER BY s.at',(now.isoformat(),)).fetchall()
+ for row in rows:
+  slot=dict(row)
+  if slot['state']=='prepared' and not slot['postid']:
+   state.execute('DELETE FROM slots WHERE at=?',(slot['at'],));state.commit();continue
+  posts=lookup(slot)
+  if len(posts)>1 or (not posts and not slot['postid']):issues.append('RemovalNeedsReconciliation:'+slot['at']);continue
+  live=[p for p in posts if not p.get('deletedAt')]
+  if live:
+   post=live[0]
+   if post['state']!='QUEUE':issues.append('RemovalRequiresReview:'+slot['at']);continue
+   if dt.datetime.fromisoformat(slot['at'])<=now+dt.timedelta(minutes=3):issues.append('RemovalTooCloseToDispatch:'+slot['at']);continue
+   cancel(post['id'])
+   if any(not p.get('deletedAt') for p in lookup(slot)):issues.append('RemovalNotConfirmed:'+slot['at']);continue
+  state.execute('DELETE FROM slots WHERE at=?',(slot['at'],));state.commit()
+ return issues
+
 def run():
  os.umask(0o077);cfg=json.loads(pathlib.Path(os.environ.get('POSTIZ_GROUPS_CONFIG','/opt/postiz-amssoft/automation/whatsapp-groups/config.json')).read_text());root=pathlib.Path(cfg.get('state_directory','/var/lib/amssoft-postiz-groups'));root.mkdir(exist_ok=True)
  lock=(root/'run.lock').open('w')
@@ -69,6 +88,14 @@ def run():
   state.commit();assets=state.execute('SELECT * FROM assets WHERE active=1 ORDER BY position').fetchall();status['mediaCount']=len(assets)
   if not assets:status['waitingForMedia']=True
   now=dt.datetime.now(UTC)
+  def removal_lookup(slot):
+   if slot['postid']:
+    return sql('SELECT coalesce(json_agg(x),\'[]\') FROM (SELECT id,state,"deletedAt" FROM "Post" WHERE id='+quote(slot['postid'])+' AND "integrationId"='+quote(channel)+')x;')
+   if not slot['media']:return []
+   media_id=json.loads(slot['media'])['id'];when=dt.datetime.fromisoformat(slot['at']).strftime('%Y-%m-%d %H:%M:%S')
+   rows=sql('SELECT coalesce(json_agg(x),\'[]\') FROM (SELECT id,state,"deletedAt",image FROM "Post" WHERE "integrationId"='+quote(channel)+' AND "publishDate"='+quote(when)+')x;')
+   return [p for p in rows if any(m.get('id')==media_id for m in json.loads(p['image']or'[]'))]
+  status['issues']+=retire_missing(state,now,removal_lookup,lambda postid:api('/posts/'+postid,'DELETE'))
   for at in next_slots(now,cfg['timezone']):
    if not assets:break
    anchor=at.isoformat();slot=state.execute('SELECT * FROM slots WHERE at=?',(anchor,)).fetchone()
