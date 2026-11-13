@@ -815,6 +815,11 @@ export class InstagramProvider
           ? `image_url=${m.path}&media_type=STORIES`
           : `image_url=${m.path}`;
 
+        const reelFeed = !isStory && firstPost.media?.length === 1 &&
+          hasExtension(m.path, 'mp4') && typeof firstPost.settings.share_to_feed === 'boolean'
+          ? `&share_to_feed=${firstPost.settings.share_to_feed}`
+          : '';
+
         // alt_text is only supported on images (single or carousel item),
         // not on videos or stories
         const altText =
@@ -861,7 +866,7 @@ export class InstagramProvider
 
         const { id: photoId } = await (
           await this.fetch(
-            `https://${type}/${META_GRAPH_API_VERSION}/${id}/media?${mediaType}${altText}${isCarousel}${itemCollaborators}${trialParams}${audioConfiguration}&access_token=${accessToken}${caption}`,
+            `https://${type}/${META_GRAPH_API_VERSION}/${id}/media?${mediaType}${reelFeed}${altText}${isCarousel}${itemCollaborators}${trialParams}${audioConfiguration}&access_token=${accessToken}${caption}`,
             {
               method: 'POST',
             }

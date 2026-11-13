@@ -1,0 +1,8 @@
+# Reuse the verified image; rebuild only the services that publish media.
+FROM amssoft/postiz-status:dba6cff2d14460217e29c536fb483e98c98fb0e3
+ARG SOURCE_REVISION
+LABEL org.opencontainers.image.revision=$SOURCE_REVISION
+LABEL org.opencontainers.image.source=https://github.com/adrianomedina-amssoft/postiz-amssoft
+COPY libraries/nestjs-libraries/src/dtos/posts/providers-settings/instagram.dto.ts /app/libraries/nestjs-libraries/src/dtos/posts/providers-settings/instagram.dto.ts
+COPY libraries/nestjs-libraries/src/integrations/social/instagram.provider.ts /app/libraries/nestjs-libraries/src/integrations/social/instagram.provider.ts
+RUN NODE_OPTIONS="--max-old-space-size=1536" pnpm run build:backend && NODE_OPTIONS="--max-old-space-size=1536" pnpm run build:orchestrator
