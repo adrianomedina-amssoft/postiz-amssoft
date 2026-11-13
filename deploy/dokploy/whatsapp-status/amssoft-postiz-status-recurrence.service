@@ -5,7 +5,7 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/python3 /opt/amssoft-postiz-status-automation/recurrence.py
+ExecStart=/usr/bin/python3 /opt/postiz-amssoft/automation/whatsapp-status/recurrence.py
 User=root
 UMask=0077
 TimeoutStartSec=300

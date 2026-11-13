@@ -15,7 +15,7 @@ def choose_asset(assets,last_position):
  return next((a for a in assets if a['position']>last_position),assets[0])
 
 def run():
- os.umask(0o077);cfg=json.loads(pathlib.Path(os.environ.get('POSTIZ_GROUPS_CONFIG','/opt/amssoft-postiz-groups-automation/config.json')).read_text());root=pathlib.Path(cfg.get('state_directory','/var/lib/amssoft-postiz-groups'));root.mkdir(exist_ok=True)
+ os.umask(0o077);cfg=json.loads(pathlib.Path(os.environ.get('POSTIZ_GROUPS_CONFIG','/opt/postiz-amssoft/automation/whatsapp-groups/config.json')).read_text());root=pathlib.Path(cfg.get('state_directory','/var/lib/amssoft-postiz-groups'));root.mkdir(exist_ok=True)
  lock=(root/'run.lock').open('w')
  try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
  except BlockingIOError:return
