@@ -1,0 +1,13 @@
+[Unit]
+Description=Plan AMS SOFT daily Speedtest Control Reels and cycle cooldown
+After=docker.service network-online.target
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/postiz-amssoft/automation/reels-speedtest-control-1/planner.py
+User=root
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+MemoryMax=512M
+CPUQuota=25%
+TimeoutStartSec=1800

@@ -1,0 +1,8 @@
+[Unit]
+Description=Maintain daily Reels campaign and 60-day cooldown
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=15min
+AccuracySec=15s
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,21 @@
+{
+  "directory": "/srv/approved-reels",
+  "state_directory": "/var/lib/amssoft-reels-speedtest-control-1",
+  "timezone": "America/Porto_Velho",
+  "compose_project": "YOUR_POSTIZ_PROJECT",
+  "postiz_url": "https://postiz.example.com",
+  "probe_image": "YOUR_VERIFIED_PROBE_IMAGE",
+  "cooldown_days": 60,
+  "min_gap_minutes": 60,
+  "reserved_hours": [
+    6,
+    12,
+    18
+  ],
+  "channels": {
+    "instagram": "APPROVED_INSTAGRAM_ACCOUNT_ID",
+    "facebook": "APPROVED_FACEBOOK_PAGE_ID"
+  },
+  "caption": "",
+  "title": "Speedtest Control"
+}
