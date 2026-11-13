@@ -2,6 +2,8 @@ const fs=require('node:fs'),ts=require('typescript'),assert=require('node:assert
 const source=fs.readFileSync('libraries/nestjs-libraries/src/temporal/temporal.module.ts','utf8');
 const output=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2021,experimentalDecorators:true,emitDecoratorMetadata:true,esModuleInterop:true},reportDiagnostics:true});
 if(output.diagnostics.some(d=>d.category===ts.DiagnosticCategory.Error))throw new Error('Worker module did not compile');
+// The Nest build rewrites workspace aliases to paths within each dist tree.
+output.outputText=output.outputText.replaceAll('require("@gitroom/nestjs-libraries/integrations/integration.manager")','require("../integrations/integration.manager")').replaceAll('require("@gitroom/nestjs-libraries/temporal/email.queues")','require("./email.queues")');
 for(const app of ['orchestrator','backend'])fs.writeFileSync(`apps/${app}/dist/libraries/nestjs-libraries/src/temporal/temporal.module.js`,output.outputText);
 // Exercise the compiled module with a test TemporalModule to inspect queue registration.
 const vm=require('node:vm');let configuration;

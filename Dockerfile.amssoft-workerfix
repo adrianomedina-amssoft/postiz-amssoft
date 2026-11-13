@@ -3,4 +3,4 @@ ARG SOURCE_REVISION
 LABEL org.opencontainers.image.revision=$SOURCE_REVISION
 COPY libraries/nestjs-libraries/src/temporal/temporal.module.ts /app/libraries/nestjs-libraries/src/temporal/temporal.module.ts
 COPY var/docker/amssoft/workerfix.cjs /app/var/docker/amssoft/workerfix.cjs
-RUN node /app/var/docker/amssoft/workerfix.cjs
+RUN node /app/var/docker/amssoft/workerfix.cjs && node -e "for(const app of ['backend','orchestrator']) require('./apps/'+app+'/dist/libraries/nestjs-libraries/src/temporal/temporal.module.js')"
