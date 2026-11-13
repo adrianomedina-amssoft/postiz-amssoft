@@ -55,7 +55,7 @@ services:
       OPENAI_API_KEY: ""
       NEXT_PUBLIC_DISCORD_SUPPORT: ""
       NEXT_PUBLIC_POLOTNO: ""
-      API_LIMIT: 30
+      API_LIMIT: 120
       FEE_AMOUNT: 0.05
       STRIPE_PUBLISHABLE_KEY: ""
       STRIPE_SECRET_KEY: ""
