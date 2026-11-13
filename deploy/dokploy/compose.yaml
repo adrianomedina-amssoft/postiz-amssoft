@@ -1,6 +1,6 @@
 services:
   postiz:
-    image: amssoft/postiz-status:a2cf259a096496ce9c546a2258b578d133917ba0-workerfix
+    image: amssoft/postiz-status:dba6cff2d14460217e29c536fb483e98c98fb0e3
     restart: always
     environment:
       WHATSAPP_STATUS_URL: https://status-whats.amssoft.com.br
@@ -15,69 +15,69 @@ services:
       REDIS_URL: redis://postiz-redis:6379
       BACKEND_INTERNAL_URL: http://localhost:3000
       TEMPORAL_ADDRESS: temporal:7233
-      IS_GENERAL: 'true'
-      DISABLE_REGISTRATION: 'true'
-      RUN_CRON: 'true'
+      IS_GENERAL: "true"
+      DISABLE_REGISTRATION: "true"
+      RUN_CRON: "true"
       STORAGE_PROVIDER: local
       UPLOAD_DIRECTORY: /uploads
       NEXT_PUBLIC_UPLOAD_DIRECTORY: /uploads
-      X_API_KEY: ''
-      X_API_SECRET: ''
-      LINKEDIN_CLIENT_ID: ''
-      LINKEDIN_CLIENT_SECRET: ''
-      REDDIT_CLIENT_ID: ''
-      REDDIT_CLIENT_SECRET: ''
-      GITHUB_CLIENT_ID: ''
-      GITHUB_CLIENT_SECRET: ''
-      BEEHIIVE_API_KEY: ''
-      BEEHIIVE_PUBLICATION_ID: ''
-      THREADS_APP_ID: ''
-      THREADS_APP_SECRET: ''
+      X_API_KEY: ""
+      X_API_SECRET: ""
+      LINKEDIN_CLIENT_ID: ""
+      LINKEDIN_CLIENT_SECRET: ""
+      REDDIT_CLIENT_ID: ""
+      REDDIT_CLIENT_SECRET: ""
+      GITHUB_CLIENT_ID: ""
+      GITHUB_CLIENT_SECRET: ""
+      BEEHIIVE_API_KEY: ""
+      BEEHIIVE_PUBLICATION_ID: ""
+      THREADS_APP_ID: ""
+      THREADS_APP_SECRET: ""
       FACEBOOK_APP_ID: ${FACEBOOK_APP_ID}
       FACEBOOK_APP_SECRET: ${FACEBOOK_APP_SECRET}
       YOUTUBE_CLIENT_ID: ${YOUTUBE_CLIENT_ID}
       YOUTUBE_CLIENT_SECRET: ${YOUTUBE_CLIENT_SECRET}
-      TIKTOK_CLIENT_ID: ''
-      TIKTOK_CLIENT_SECRET: ''
-      PINTEREST_CLIENT_ID: ''
-      PINTEREST_CLIENT_SECRET: ''
-      DRIBBBLE_CLIENT_ID: ''
-      DRIBBBLE_CLIENT_SECRET: ''
-      DISCORD_CLIENT_ID: ''
-      DISCORD_CLIENT_SECRET: ''
-      DISCORD_BOT_TOKEN_ID: ''
-      SLACK_ID: ''
-      SLACK_SECRET: ''
-      SLACK_SIGNING_SECRET: ''
+      TIKTOK_CLIENT_ID: ""
+      TIKTOK_CLIENT_SECRET: ""
+      PINTEREST_CLIENT_ID: ""
+      PINTEREST_CLIENT_SECRET: ""
+      DRIBBBLE_CLIENT_ID: ""
+      DRIBBBLE_CLIENT_SECRET: ""
+      DISCORD_CLIENT_ID: ""
+      DISCORD_CLIENT_SECRET: ""
+      DISCORD_BOT_TOKEN_ID: ""
+      SLACK_ID: ""
+      SLACK_SECRET: ""
+      SLACK_SIGNING_SECRET: ""
       MASTODON_URL: https://mastodon.social
-      MASTODON_CLIENT_ID: ''
-      MASTODON_CLIENT_SECRET: ''
-      OPENAI_API_KEY: ''
-      NEXT_PUBLIC_DISCORD_SUPPORT: ''
-      NEXT_PUBLIC_POLOTNO: ''
+      MASTODON_CLIENT_ID: ""
+      MASTODON_CLIENT_SECRET: ""
+      OPENAI_API_KEY: ""
+      NEXT_PUBLIC_DISCORD_SUPPORT: ""
+      NEXT_PUBLIC_POLOTNO: ""
       API_LIMIT: 30
       FEE_AMOUNT: 0.05
-      STRIPE_PUBLISHABLE_KEY: ''
-      STRIPE_SECRET_KEY: ''
-      STRIPE_SIGNING_KEY: ''
-      STRIPE_SIGNING_KEY_CONNECT: ''
+      STRIPE_PUBLISHABLE_KEY: ""
+      STRIPE_SECRET_KEY: ""
+      STRIPE_SIGNING_KEY: ""
+      STRIPE_SIGNING_KEY_CONNECT: ""
       NX_ADD_PLUGINS: false
       TZ: America/Manaus
     volumes:
-    - /opt/amssoft-whatsapp-status/private/postiz-status-token:/run/secrets/whatsapp-status-token:ro
-    - postiz-config:/config/
-    - postiz-uploads:/uploads/
-    - ./boot/readiness.cjs:/opt/postiz-readiness.cjs:ro
-    - ./boot/start.sh:/opt/postiz-start.sh:ro
+      - /opt/amssoft-whatsapp-status/private/postiz-status-token:/run/secrets/whatsapp-status-token:ro
+      - postiz-config:/config/
+      - postiz-uploads:/uploads/
+      - ./boot/readiness.cjs:/opt/postiz-readiness.cjs:ro
+      - ./boot/start.sh:/opt/postiz-start.sh:ro
     networks:
-    - postiz-network
-    - temporal-network
+      - postiz-network
+      - temporal-network
     healthcheck:
       test:
-      - CMD
-      - node
-      - /opt/postiz-readiness.cjs
-      - --workers
+        - CMD
+        - node
+        - /opt/postiz-readiness.cjs
+        - --workers
       interval: 30s
       timeout: 12s
       start_period: 180s
@@ -93,11 +93,20 @@ services:
       driver: json-file
       options:
         max-size: 10m
-        max-file: '3'
+        max-file: "3"
     command:
-    - sh
-    - /opt/postiz-start.sh
+      - sh
+      - /opt/postiz-start.sh
     pull_policy: never
+    labels:
+      - dokploy.organization.id=4oeukqkDDP15LlucNoz9C
+      - dokploy.project.id=iLEB0l_SIStW8u2d4pzvJ
+      - dokploy.project=Social Mídia
+      - dokploy.environment.id=86ubaFY9uzvpI3_Penjn9
+      - dokploy.environment=production
+      - dokploy.application.id=x3lbOPLqeWXVVC8s-Op-Q
+      - dokploy.application=Postiz AMS Soft
+      - dokploy.service=postiz
   postiz-postgres:
     image: postgres@sha256:eee6c6e1b0894fa4fe0075eb054af9fd1cf39a35321c2d4110626cfe506411fb
     restart: always
@@ -106,13 +115,13 @@ services:
       POSTGRES_USER: postiz-user
       POSTGRES_DB: postiz-db-local
     volumes:
-    - postgres-volume:/var/lib/postgresql/data
+      - postgres-volume:/var/lib/postgresql/data
     networks:
-    - postiz-network
+      - postiz-network
     healthcheck:
       test:
-      - CMD-SHELL
-      - pg_isready -U postiz-user -d postiz-db-local
+        - CMD-SHELL
+        - pg_isready -U postiz-user -d postiz-db-local
       interval: 10s
       timeout: 5s
       retries: 5
@@ -121,58 +130,84 @@ services:
       driver: json-file
       options:
         max-size: 10m
-        max-file: '3'
+        max-file: "3"
+    labels:
+      - dokploy.organization.id=4oeukqkDDP15LlucNoz9C
+      - dokploy.project.id=iLEB0l_SIStW8u2d4pzvJ
+      - dokploy.project=Social Mídia
+      - dokploy.environment.id=86ubaFY9uzvpI3_Penjn9
+      - dokploy.environment=production
+      - dokploy.application.id=x3lbOPLqeWXVVC8s-Op-Q
+      - dokploy.application=Postiz AMS Soft
+      - dokploy.service=postiz-postgres
   postiz-redis:
     image: redis@sha256:0312984fbfeb2ff1d4382ecef45b50e7d65478a6a58cf12ce28d6de7a4142e45
     restart: always
     healthcheck:
       test:
-      - CMD-SHELL
-      - redis-cli ping | grep -q PONG
+        - CMD-SHELL
+        - redis-cli ping | grep -q PONG
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 5s
     volumes:
-    - postiz-redis-data:/data
+      - postiz-redis-data:/data
     networks:
-    - postiz-network
+      - postiz-network
     logging:
       driver: json-file
       options:
         max-size: 10m
-        max-file: '3'
+        max-file: "3"
+    labels:
+      - dokploy.organization.id=4oeukqkDDP15LlucNoz9C
+      - dokploy.project.id=iLEB0l_SIStW8u2d4pzvJ
+      - dokploy.project=Social Mídia
+      - dokploy.environment.id=86ubaFY9uzvpI3_Penjn9
+      - dokploy.environment=production
+      - dokploy.application.id=x3lbOPLqeWXVVC8s-Op-Q
+      - dokploy.application=Postiz AMS Soft
+      - dokploy.service=postiz-redis
   temporal-elasticsearch:
     image: elasticsearch@sha256:9a6443f55243f6acbfeb4a112d15eb3b9aac74bf25e0e39fa19b3ddd3a6879d0
     restart: always
     environment:
-    - cluster.routing.allocation.disk.threshold_enabled=true
-    - cluster.routing.allocation.disk.watermark.low=512mb
-    - cluster.routing.allocation.disk.watermark.high=256mb
-    - cluster.routing.allocation.disk.watermark.flood_stage=128mb
-    - discovery.type=single-node
-    - ES_JAVA_OPTS=-Xms256m -Xmx256m
-    - xpack.security.enabled=false
+      - cluster.routing.allocation.disk.threshold_enabled=true
+      - cluster.routing.allocation.disk.watermark.low=512mb
+      - cluster.routing.allocation.disk.watermark.high=256mb
+      - cluster.routing.allocation.disk.watermark.flood_stage=128mb
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms256m -Xmx256m
+      - xpack.security.enabled=false
     networks:
-    - temporal-network
+      - temporal-network
     expose:
-    - 9200
+      - 9200
     healthcheck:
       test:
-      - CMD-SHELL
-      - curl -fsS "http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s"
-        || exit 1
+        - CMD-SHELL
+        - curl -fsS "http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s" || exit 1
       interval: 10s
       timeout: 10s
       retries: 10
       start_period: 60s
     volumes:
-    - temporal-elasticsearch-data:/usr/share/elasticsearch/data
+      - temporal-elasticsearch-data:/usr/share/elasticsearch/data
     logging:
       driver: json-file
       options:
         max-size: 10m
-        max-file: '3'
+        max-file: "3"
+    labels:
+      - dokploy.organization.id=4oeukqkDDP15LlucNoz9C
+      - dokploy.project.id=iLEB0l_SIStW8u2d4pzvJ
+      - dokploy.project=Social Mídia
+      - dokploy.environment.id=86ubaFY9uzvpI3_Penjn9
+      - dokploy.environment=production
+      - dokploy.application.id=x3lbOPLqeWXVVC8s-Op-Q
+      - dokploy.application=Postiz AMS Soft
+      - dokploy.service=temporal-elasticsearch
   temporal-postgresql:
     image: postgres@sha256:1beaa3084eee2676f20a9cd9928f0bf2c5bf674f8e49f81017912183d377c61c
     restart: always
@@ -180,24 +215,33 @@ services:
       POSTGRES_PASSWORD: ${TEMPORAL_DB_PASSWORD}
       POSTGRES_USER: temporal
     networks:
-    - temporal-network
+      - temporal-network
     expose:
-    - 5432
+      - 5432
     healthcheck:
       test:
-      - CMD-SHELL
-      - pg_isready -U temporal
+        - CMD-SHELL
+        - pg_isready -U temporal
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
     volumes:
-    - temporal-postgres-data:/var/lib/postgresql/data
+      - temporal-postgres-data:/var/lib/postgresql/data
     logging:
       driver: json-file
       options:
         max-size: 10m
-        max-file: '3'
+        max-file: "3"
+    labels:
+      - dokploy.organization.id=4oeukqkDDP15LlucNoz9C
+      - dokploy.project.id=iLEB0l_SIStW8u2d4pzvJ
+      - dokploy.project=Social Mídia
+      - dokploy.environment.id=86ubaFY9uzvpI3_Penjn9
+      - dokploy.environment=production
+      - dokploy.application.id=x3lbOPLqeWXVVC8s-Op-Q
+      - dokploy.application=Postiz AMS Soft
+      - dokploy.service=temporal-postgresql
   temporal:
     restart: always
     image: temporalio/auto-setup@sha256:607d68caa111338d754771efb876c92dfcdae06d056e4530bb31cd0f37406e6a
@@ -207,57 +251,86 @@ services:
       temporal-elasticsearch:
         condition: service_healthy
     environment:
-    - DB=postgres12
-    - DB_PORT=5432
-    - POSTGRES_USER=temporal
-    - POSTGRES_PWD=${TEMPORAL_DB_PASSWORD}
-    - POSTGRES_SEEDS=temporal-postgresql
-    - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development-sql.yaml
-    - ENABLE_ES=true
-    - ES_SEEDS=temporal-elasticsearch
-    - ES_VERSION=v7
-    - TEMPORAL_NAMESPACE=default
+      - DB=postgres12
+      - DB_PORT=5432
+      - POSTGRES_USER=temporal
+      - POSTGRES_PWD=${TEMPORAL_DB_PASSWORD}
+      - POSTGRES_SEEDS=temporal-postgresql
+      - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development-sql.yaml
+      - ENABLE_ES=true
+      - ES_SEEDS=temporal-elasticsearch
+      - ES_VERSION=v7
+      - TEMPORAL_NAMESPACE=default
     networks:
-    - temporal-network
+      - temporal-network
     healthcheck:
       test:
-      - CMD
-      - temporal
-      - operator
-      - cluster
-      - health
-      - --address
-      - temporal:7233
+        - CMD
+        - temporal
+        - operator
+        - cluster
+        - health
+        - --address
+        - temporal:7233
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 30s
     volumes:
-    - ./dynamicconfig:/etc/temporal/config/dynamicconfig
+      - ./dynamicconfig:/etc/temporal/config/dynamicconfig
     labels:
       kompose.volume.type: configMap
+      dokploy.organization.id: 4oeukqkDDP15LlucNoz9C
+      dokploy.project.id: iLEB0l_SIStW8u2d4pzvJ
+      dokploy.project: Social Mídia
+      dokploy.environment.id: 86ubaFY9uzvpI3_Penjn9
+      dokploy.environment: production
+      dokploy.application.id: x3lbOPLqeWXVVC8s-Op-Q
+      dokploy.application: Postiz AMS Soft
+      dokploy.service: temporal
     logging:
       driver: json-file
       options:
         max-size: 10m
-        max-file: '3'
+        max-file: "3"
   caddy:
     image: caddy@sha256:eb4d35b7452d1ab6171fbdbe8d9275b2301dad6dad92115d91e19fb9b24d510f
     restart: unless-stopped
     volumes:
-    - ./Caddyfile:/etc/caddy/Caddyfile:ro
-    - ./public-pages:/srv/postiz-public:ro
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./public-pages:/srv/postiz-public:ro
     networks:
-    - postiz-network
+      - postiz-network
+      - dokploy-network
+      - default
     logging:
       driver: json-file
       options:
         max-size: 10m
-        max-file: '3'
+        max-file: "3"
     expose:
-    - 80
+      - 80
     labels:
-    - traefik.http.routers.compose-override-mobile-microchip-fttfh7-32-websecure.tls=true
+      - traefik.docker.network=dokploy-network
+      - traefik.http.routers.compose-override-mobile-microchip-fttfh7-32-web.rule=Host(`postiz.amssoft.com.br`)
+      - traefik.http.routers.compose-override-mobile-microchip-fttfh7-32-web.entrypoints=web
+      - traefik.http.services.compose-override-mobile-microchip-fttfh7-32-web.loadbalancer.server.port=80
+      - traefik.http.routers.compose-override-mobile-microchip-fttfh7-32-web.service=compose-override-mobile-microchip-fttfh7-32-web
+      - traefik.http.routers.compose-override-mobile-microchip-fttfh7-32-web.middlewares=redirect-to-https@file
+      - traefik.http.routers.compose-override-mobile-microchip-fttfh7-32-websecure.rule=Host(`postiz.amssoft.com.br`)
+      - traefik.http.routers.compose-override-mobile-microchip-fttfh7-32-websecure.entrypoints=websecure
+      - traefik.http.services.compose-override-mobile-microchip-fttfh7-32-websecure.loadbalancer.server.port=80
+      - traefik.http.routers.compose-override-mobile-microchip-fttfh7-32-websecure.service=compose-override-mobile-microchip-fttfh7-32-websecure
+      - traefik.http.routers.compose-override-mobile-microchip-fttfh7-32-websecure.tls.certresolver=letsencrypt
+      - traefik.enable=true
+      - dokploy.organization.id=4oeukqkDDP15LlucNoz9C
+      - dokploy.project.id=iLEB0l_SIStW8u2d4pzvJ
+      - dokploy.project=Social Mídia
+      - dokploy.environment.id=86ubaFY9uzvpI3_Penjn9
+      - dokploy.environment=production
+      - dokploy.application.id=x3lbOPLqeWXVVC8s-Op-Q
+      - dokploy.application=Postiz AMS Soft
+      - dokploy.service=caddy
 volumes:
   postgres-volume:
     external: false
@@ -276,4 +349,6 @@ networks:
     driver: bridge
   temporal-network:
     driver: bridge
+  dokploy-network:
+    external: true
 name: postiz
