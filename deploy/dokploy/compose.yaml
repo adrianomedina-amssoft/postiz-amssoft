@@ -62,7 +62,7 @@ services:
       STRIPE_SIGNING_KEY: ""
       STRIPE_SIGNING_KEY_CONNECT: ""
       NX_ADD_PLUGINS: false
-      TZ: America/Manaus
+      TZ: America/Porto_Velho
     volumes:
       - /opt/waha-amssoft/private/postiz-status-token:/run/secrets/whatsapp-status-token:ro
       - postiz-config:/config/
