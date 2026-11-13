@@ -43,7 +43,8 @@ export const getTemporalModule = (
               { identifier: 'main', maxConcurrentJob: undefined },
               ...socialIntegrationList,
             ]
-              .filter((f) => f.identifier.indexOf('-') === -1)
+              // WhatsApp Status has no separate base provider to own its queue.
+              .filter((f) => f.identifier.indexOf('-') === -1 || f.identifier === 'whatsapp-status')
               .map((integration) => ({
                 integration,
                 taskQueue: integration.identifier.split('-')[0],

@@ -1,0 +1,6 @@
+FROM amssoft/postiz-status:9c1480ac2ec88be6b2ffd4d30a6fb4b0d613797a
+ARG SOURCE_REVISION
+LABEL org.opencontainers.image.revision=$SOURCE_REVISION
+COPY libraries/nestjs-libraries/src/temporal/temporal.module.ts /app/libraries/nestjs-libraries/src/temporal/temporal.module.ts
+COPY var/docker/amssoft/workerfix.cjs /app/var/docker/amssoft/workerfix.cjs
+RUN node /app/var/docker/amssoft/workerfix.cjs
