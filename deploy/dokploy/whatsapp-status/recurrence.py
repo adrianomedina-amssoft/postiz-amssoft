@@ -6,7 +6,7 @@ lock=(ROOT/'recurrence.lock').open('w')
 try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
 except BlockingIOError:sys.exit(0)
 UTC=dt.timezone.utc
-cfg=json.loads(pathlib.Path(os.environ.get('POSTIZ_RECURRENCE_CONFIG','/opt/amssoft-postiz-status-automation/config.json')).read_text())
+cfg=json.loads(pathlib.Path(os.environ.get('POSTIZ_RECURRENCE_CONFIG','/opt/postiz-amssoft/automation/whatsapp-status/config.json')).read_text())
 def container(service):
  x=subprocess.check_output(['docker','ps','-q','--filter','label=com.docker.compose.project='+cfg['compose_project'],'--filter','label=com.docker.compose.service='+service],text=True).strip()
  if not x:raise RuntimeError('PostizUnavailable')
