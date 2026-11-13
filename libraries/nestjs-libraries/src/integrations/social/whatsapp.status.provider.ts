@@ -4,6 +4,8 @@ import { Integration } from '@prisma/client';
 import { readFileSync } from 'node:fs';
 import { makeSecureId } from '@gitroom/nestjs-libraries/services/make.secure.id';
 import striptags from 'striptags';
+import { Context } from '@temporalio/activity';
+import { createHash } from 'node:crypto';
 
 export class WhatsappStatusProvider extends SocialAbstract implements SocialProvider {
   identifier = 'whatsapp-status';
@@ -43,7 +45,9 @@ export class WhatsappStatusProvider extends SocialAbstract implements SocialProv
     const prefix = process.env.NEXT_PUBLIC_UPLOAD_DIRECTORY || '/uploads';
     const pathname = decodeURIComponent(path.pathname);
     if (path.origin !== frontend.origin || !pathname.startsWith(prefix + '/') || !pathname.toLowerCase().endsWith('.mp4')) throw new BadBody(this.identifier, '{}', '{}', 'Use um vídeo MP4 da biblioteca local do Postiz');
-    const job = await this.bridge('/automation/jobs', { id: first.id, file: pathname.slice(prefix.length + 1), caption: striptags(first.message || '') });
+    const execution = Context.current().info.workflowExecution;
+    const occurrence = createHash('sha256').update(first.id + '|' + execution.workflowId + '|' + execution.runId).digest('hex');
+    const job = await this.bridge('/automation/jobs', { id: occurrence, file: pathname.slice(prefix.length + 1), caption: striptags(first.message || '') });
     return [{ id: first.id, postId: job.id, releaseURL: '', status: 'pending', pendingData: { jobId: job.id } }];
   }
   async post(id: string, accessToken: string, posts: PostDetails[], integration: Integration): Promise<PostResponse[]> { return this.postPending(id, accessToken, posts, integration); }

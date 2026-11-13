@@ -8,6 +8,7 @@ on:
 
 jobs:
   build:
+    if: github.ref != 'refs/heads/amssoft/whatsapp-status'
     runs-on: ubuntu-latest
     
 
