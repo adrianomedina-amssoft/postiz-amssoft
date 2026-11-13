@@ -1,0 +1,48 @@
+name: AMS SOFT WhatsApp Status build
+on:
+  push:
+    branches: [amssoft/whatsapp-status]
+concurrency:
+  group: amssoft-whatsapp-status-build
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Build application image
+        env:
+          SOURCE_REVISION: ${{ github.sha }}
+        run: |
+          docker build -f Dockerfile.dev --build-arg NEXT_PUBLIC_VERSION=amssoft-whatsapp-status --label org.opencontainers.image.revision="$SOURCE_REVISION" --label org.opencontainers.image.source=https://github.com/adrianomedina-amssoft/postiz-amssoft -t "amssoft/postiz-status:$SOURCE_REVISION" .
+          docker save "amssoft/postiz-status:$SOURCE_REVISION" | gzip -1 | split -b 1400m - postiz-status.tar.gz.part-
+          sha256sum postiz-status.tar.gz.part-* > SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: postiz-status-image
+          path: |
+            postiz-status.tar.gz.part-*
+            SHA256SUMS
+          compression-level: 0
+          retention-days: 3
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: postiz-status-image
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          SOURCE_REVISION: ${{ github.sha }}
+        run: |
+          sha256sum --check SHA256SUMS
+          gh release create "whatsapp-status-$SOURCE_REVISION" postiz-status.tar.gz.part-* SHA256SUMS --target "$SOURCE_REVISION" --prerelease --title "Postiz WhatsApp Status $SOURCE_REVISION" --notes "WhatsApp Status provider. Credentials remain private runtime mounts; this image contains no production sessions."
