@@ -1,6 +1,6 @@
 services:
   postiz:
-    image: amssoft/postiz-status:9c1480ac2ec88be6b2ffd4d30a6fb4b0d613797a
+    image: amssoft/postiz-status:c1813edfd27d32cf025368fb340fc90fec182a23-workerfix
     restart: always
     environment:
       WHATSAPP_STATUS_URL: https://status-whats.amssoft.com.br
